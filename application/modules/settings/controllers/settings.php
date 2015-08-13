@@ -37,14 +37,30 @@ class Settings extends Admin_Controller
 
             // Save the submitted settings
             foreach ($settings as $key => $value) {
-                // Don't save empty passwords
-                if ($key == 'smtp_password' or $key == 'merchant_password') {
-                    if ($value <> '') {
-                        $this->load->library('encrypt');
-                        $this->mdl_settings->save($key, $this->encrypt->encode($value));
-                    }
-                } else {
-                    $this->mdl_settings->save($key, $value);
+                switch ($key) {
+                    case 'smtp_password':
+                    case 'merchant_password':
+                        // Don't save empty passwords
+                        if ($value <> '') {
+                            $this->load->library('encrypt');
+                            $this->mdl_settings->save($key, $this->encrypt->encode($value));
+                        }
+                        break;
+                    case 'smtp_security':
+                        // Set correct smtp_port if TLS is selected
+                        if ($value == 'tls' and $settings['smtp_port'] == '') {
+                            $this->mdl_settings->save('smtp_port', 587);
+                        }
+
+                        // Set correct smtp_port if SSL is selected
+                        if ($value == 'ssl' and $settings['smtp_port'] == '') {
+                            $this->mdl_settings->save('smtp_port', 465);
+                        }
+                        
+                        $this->mdl_settings->save($key, $value);
+                        break;
+                    default:
+                        $this->mdl_settings->save($key, $value);
                 }
             }
 
