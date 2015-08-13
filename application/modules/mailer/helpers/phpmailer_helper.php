@@ -18,6 +18,7 @@ if (!defined('BASEPATH'))
 
 function phpmail_send($from, $to, $subject, $message, $attachment_path = NULL, $cc = NULL, $bcc = NULL, $more_attachments = NULL)
 {
+    require_once(APPPATH . 'modules/mailer/helpers/phpmailer/class.smtp.php');
     require_once(APPPATH . 'modules/mailer/helpers/phpmailer/class.phpmailer.php');
 
     $CI = &get_instance();
